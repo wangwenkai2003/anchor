@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE generatorConfiguration PUBLIC
+        "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN" "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd" >
+<generatorConfiguration>
+    <!-- classPathEntry:数据库的 JDBC驱动的jar 包地址 如果不同通过maven导入的话需要指明地址 -->
+    <!--        <classPathEntry location="lib/mysql-connector-java-8.0.28.jar"/>-->
+
+    <!--生成java代码-->
+    <!-- targetRuntime:执行生成的逆向工程的版本  -->
+    <!--              MyBatis3:生成带有条件的CRUD（豪华尊享版本）简单说帮忙生成的数据操作方法多  -->
+    <!--              MyBatis3Simple:生成带有基本的CRUD（清新简单版本）简单说帮忙生成的数据操作方法少  -->
+
+    <context id="DB2Tables" targetRuntime="MyBatis3Simple">
+
+        <!-- 配置生成pojo的序列化的插件-->
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"/>
+
+        <!-- 配置生成toString的序列化的插件  -->
+        <plugin type="org.mybatis.generator.plugins.ToStringPlugin"/>
+
+        <commentGenerator>
+            <!-- 是否去除自动生成的（english）注释 true：是 ： false:否 -->
+            <property name="suppressAllComments" value="true"/>
+        </commentGenerator>
+
+        <!--数据库连接的信息：驱动类、连接地址、用户名、密码 -->
+        <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
+                        connectionURL="jdbc:mysql://localhost:3306/INFORMATION_SCHEMA?serverTimezone=UTC"
+                        userId="root"
+                        password="1234"/>
+
+        <!-- 指定生成的实体类的存放位置 -->
+        <javaModelGenerator targetPackage="com.anchor.domain" targetProject="./src/main/java">
+            <!--是否可以访问子包  这里的true表示可以-->
+            <property name="enableSubPackages" value="true"/>
+            <property name="trimStrings" value="true"/>
+        </javaModelGenerator>
+
+        <!-- 指定生成的Dao映射文件的存放位置 -->
+        <sqlMapGenerator targetPackage="com.anchor.mappers" targetProject="./src/main/resources">
+            <property name="enableSubPackages" value="false"/>
+        </sqlMapGenerator>
+
+        <!--指定生成的Dao接口的存放位置-->
+        <javaClientGenerator targetPackage="com.anchor.mappers" targetProject="./src/main/java" type="XMLMAPPER">
+            <property name="enableSubPackages" value="false"/>
+        </javaClientGenerator>
+
+        <!-- 指定数据库表  这个带不带mapperName="StudentMapper" 都行-->
+        <table tableName="gen_table" domainObjectName="GenTable" mapperName="GenTableMapper" />
+<!--        <table tableName="block" domainObjectName="Block" mapperName="BlockMapper" />-->
+<!--        <table tableName="user" domainObjectName="User" mapperName="UserMapper" />-->
+        <!-- 如果对于某些方法，不需要显示可以如下设置        -->
+        <!--        <table tableName="t_grade" domainObjectName="Grade" mapperName="GradeMapper"-->
+        <!--               enableCountByExample="false" enableDeleteByExample="false"-->
+        <!--               enableSelectByExample="true" enableUpdateByExample="false"/>-->
+        <!--        <table tableName="t_student" domainObjectName="Student" mapperName="StudentMapper"-->
+        <!--               enableCountByExample="false" enableDeleteByExample="false"-->
+        <!--               enableSelectByExample="true" enableUpdateByExample="false"/>-->
+
+    </context>
+</generatorConfiguration>

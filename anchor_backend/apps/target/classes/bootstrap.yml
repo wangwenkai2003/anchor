@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    nacos:
+      config:
+        server-addr: 127.0.0.1:8848
+        file-extension: yml
+        namespace: cd99a3f1-f3b8-47d7-bec7-c03c40ca9fa4
+        shared-dataids: mysql.yml
+        enabled: true
+

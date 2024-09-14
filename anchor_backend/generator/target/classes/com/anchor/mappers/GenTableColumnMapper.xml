@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.anchor.mappers.GenTableColumnMapper">
+
+  <!-- 定义 ResultMap -->
+  <resultMap id="genTableColumnResultMap" type="com.anchor.domain.GenTableColumn">
+    <id property="columnId" column="column_id" />
+    <result property="tableId" column="table_id" />
+    <result property="columnName" column="column_name" />
+    <result property="columnComment" column="column_comment" />
+    <result property="columnType" column="column_type" />
+    <result property="javaType" column="java_type" />
+    <result property="javaField" column="java_field" />
+    <result property="isPk" column="is_pk" />
+    <result property="isIncrement" column="is_increment" />
+    <result property="isRequired" column="is_required" />
+    <result property="isInsert" column="is_insert" />
+    <result property="isEdit" column="is_edit" />
+    <result property="isList" column="is_list" />
+    <result property="isQuery" column="is_query" />
+    <result property="queryType" column="query_type" />
+    <result property="htmlType" column="html_type" />
+    <result property="dictType" column="dict_type" />
+    <result property="sort" column="sort" />
+  </resultMap>
+
+  <!-- SQL 语句定义 -->
+  <!-- 根据表名称查询列信息 -->
+  <select id="selectDbTableColumnsByName" resultMap="genTableColumnResultMap">
+    select column_name,
+    (case when (is_nullable = 'NO' and column_key != 'PRI') then '1' else null end) as is_required,
+    (case when column_key = 'PRI' then '1' else '0' end) as is_pk,
+    ordinal_position as sort,
+    column_comment,
+    (case when extra = 'auto_increment' then '1' else '0' end) as is_increment,
+    column_type
+    from information_schema.columns
+    where table_schema = (select database())
+    and table_name = #{tableName} <!-- 使用参数占位符 -->
+    order by ordinal_position
+  </select>
+
+  <!-- 查询业务字段列表 -->
+  <select id="selectGenTableColumnListByTableId" resultMap="genTableColumnResultMap">
+    SELECT * FROM gen_table_column WHERE table_id = #{tableId}
+  </select>
+
+  <!-- 新增业务字段 -->
+  <insert id="insertGenTableColumn" useGeneratedKeys="true" keyProperty="columnId">
+    INSERT INTO gen_table_column(table_id, column_name, column_comment, column_type, java_type, java_field, is_pk, is_increment, is_required, is_insert, is_edit, is_list, is_query, query_type, html_type, dict_type, sort)
+    VALUES (#{tableId}, #{columnName}, #{columnComment}, #{columnType}, #{javaType}, #{javaField}, #{isPk}, #{isIncrement}, #{isRequired}, #{isInsert}, #{isEdit}, #{isList}, #{isQuery}, #{queryType}, #{htmlType}, #{dictType}, #{sort})
+  </insert>
+
+  <!-- 修改业务字段 -->
+  <update id="updateGenTableColumn">
+    UPDATE gen_table_column
+    SET table_id=#{tableId}, column_name=#{columnName}, column_comment=#{columnComment}, column_type=#{columnType},
+        java_type=#{javaType}, java_field=#{javaField}, is_pk=#{isPk}, is_increment=#{isIncrement},
+        is_required=#{isRequired}, is_insert=#{isInsert}, is_edit=#{isEdit}, is_list=#{isList},
+        is_query=#{isQuery}, query_type=#{queryType}, html_type=#{htmlType}, dict_type=#{dictType},
+        sort=#{sort}
+    WHERE column_id=#{columnId}
+  </update>
+
+  <!-- 删除业务字段 -->
+  <delete id="deleteGenTableColumns">
+    DELETE FROM gen_table_column
+    <where>
+      <foreach item="column" collection="genTableColumns" separator="OR">
+        column_id=#{column.columnId}
+      </foreach>
+    </where>
+  </delete>
+
+  <!-- 批量删除业务字段 -->
+  <delete id="deleteGenTableColumnByIds">
+    DELETE FROM gen_table_column WHERE column_id IN
+    <foreach item="id" collection="ids" open="(" separator="," close=")">
+      #{id}
+    </foreach>
+  </delete>
+</mapper>
